@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Text, View, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import styled from 'styled-components';
+import { ActivityIndicator, FlatList, TouchableOpacity, Image} from 'react-native';
 import Axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import Header from '../components/header';
-
-const Separator = () => (
-  <View style={styles.separator} />
-);
 
 const Manga = () => {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const navigation = useNavigation();
 
+  //Recuperer les données de API
   useEffect(() => {
     Axios.get('https://api.jikan.moe/v4/manga')
       .then((data) => {
@@ -23,10 +21,9 @@ const Manga = () => {
   }, []);
 
   return (
-    <View>
+    <Container>
       <Header />
-      <Text style={styles.titre}>Tous les mangas :</Text>
-      <Separator />
+      <H1>Tous les mangas</H1>
       {isLoading ? <ActivityIndicator /> : (
         <FlatList
           data={data}
@@ -40,53 +37,60 @@ const Manga = () => {
                   //On fait passer en params de la route l'id de l'item (props)
                   navigation.navigate('Details', {id: item.mal_id});
                   }}>
-                  <View style={styles.container}>
-                  <Text style={styles.titre}>{item.title}</Text>
-                  <Image 
-                    style={{
-                      width: 100,
-                      height: 100,
-                      backgroundColor: 'red',
-                    }} 
-                    source={{uri: item.images?.jpg?.image_url}}
-                  />
-                  </View>
+                    <H2>{item.title}</H2>
+                    <View>
+                      <Image 
+                        style={{
+                          resizeMode: "cover",
+                          width: 350,
+                          height: 100,
+                          backgroundColor: 'red',            
+                        }} 
+                        source={{uri: item.images?.jpg?.image_url}}
+                      />
+                    </View>
+                    <Separateur/>
                 </TouchableOpacity>
               </>
             )
           }}
         />
       )}
-    </View>
+    </Container>
   );
 };
 
 export default Manga;
 
-const styles = StyleSheet.create({
-  separator: {
-    marginVertical: 8,
-    borderBottomColor: '#737373',
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
-  container: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  header: {
-    resizeMode: "cover",
-    height: 100,
-    width: 400,
-  },
-  accueil: {
-    height: 100,
-    width: 150,
-  },
-  titre:{
-    fontWeight: 'bold',
-    paddingTop: 10,
-    textAlign: "center",
-    fontSize: 18,
-    marginTop: 0,
-  }
-});
+//Utilisation des styled components
+const View = styled.View`
+  flexDirection: row;
+  justify-content: center;
+  padding: 10px;
+`;
+
+const Separateur = styled.View`
+  padding: 5px;
+`;
+
+const H1 = styled.Text`
+  color: red;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 20px;
+`;
+
+const H2 = styled.Text`
+  text-align: center;
+  font-weight: bold;
+  font-size: 16px;                                       
+`;
+
+const Container = styled.View`
+  justify-content: center;
+  align-items: center;
+  margin-left: 15px;
+  margin-right: 15px;
+`;
